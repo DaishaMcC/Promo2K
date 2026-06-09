@@ -12,68 +12,41 @@ struct CartView: View {
 
     var body: some View {
         ScrollView {
-            if cartManager.products.count > 0 {
-                ForEach(cartManager.products, id: \.id) { product in
-                    ProductRow(product: product)
-                }
+            if cartManager.products.isEmpty {
+                Text("Your cart is empty")
+                    .font(.headline)
+                    .padding()
+            } else {
+                VStack(spacing: 20) {
 
-                VStack(spacing: 16) {
+                    ForEach(cartManager.products) { item in
+                        ProductRow(item: item)
+                            .environmentObject(cartManager)
+                    }
+
                     HStack {
-                        Text("Your Cart Total")
-                            .font(.headline)
+                        Text("Total")
+                            .font(.title2)
+                            .bold()
 
                         Spacer()
 
-                        Text("$\(cartManager.total).00")
-                            .font(.headline)
+                        Text("$\(cartManager.total)")
+                            .font(.title2)
                             .bold()
                     }
-
-                    Button {
-                        openShopifyCheckout()
-                    } label: {
-                        HStack {
-                            Image(systemName: "bag.fill")
-                            Text("Checkout with Shopify")
-                                .fontWeight(.semibold)
-
-                            Spacer()
-
-                            Image(systemName: "arrow.right")
-                        }
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.black)
-                        .cornerRadius(14)
-                    }
-                    .buttonStyle(.plain)
+                    .padding()
                 }
-                .padding()
-                .background(Color(.systemGray6))
-                .cornerRadius(18)
-                .padding(.top, 10)
-
-            } else {
-                Text("Your Cart Is Empty")
-                    .font(.headline)
-                    .padding(.top, 40)
             }
         }
-        .navigationTitle("My Cart")
-        .padding()
-    }
-
-    // UPDATED FUNCTION
-    func openShopifyCheckout() {
-        if let url = URL(string: "https://PROMO2K.myshopify.com/cart") {
-            UIApplication.shared.open(url)
-        }
+        .navigationTitle("Cart")
     }
 }
 
 #Preview {
-    CartView()
-        .environmentObject(CartManager())
+    NavigationView {
+        CartView()
+            .environmentObject(CartManager())
+    }
 }
 

@@ -10,47 +10,67 @@ import SwiftUI
 struct ProductCard: View {
     @EnvironmentObject var cartManager: CartManager
     var product: Product
-    
+
+    @State private var showSizeOptions = false
+
     var body: some View {
-        ZStack(alignment: .topTrailing){
-            
-            ZStack(alignment: .bottom){
-                Image(product.image)
-                    .resizable()
-                    .cornerRadius(20)
-                    .frame(width: 180)
-                    .scaledToFit()
-                
-                VStack(){
-                    Text(product.name)
-                        .bold()
-                    
-                    Text("$\(product.price)")
-                        .font(.caption)
+        ZStack(alignment: .topTrailing) {
+
+            NavigationLink {
+                ProductDetailView(product: product)
+                    .environmentObject(cartManager)
+            } label: {
+                ZStack(alignment: .bottom) {
+                    Image(product.image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 180, height: 180)
+                        .cornerRadius(20)
+
+                    VStack {
+                        Text(product.name)
+                            .bold()
+
+                        Text("$\(product.price)")
+                            .font(.caption)
+                    }
+                    .padding()
+                    .foregroundColor(.primary)
                 }
-                .padding()
-                
+                .frame(width: 180, height: 240)
+                .shadow(radius: 10)
             }
-            .frame(width: 180, height: 240)
-            .shadow(radius: 10)
-            
+            .buttonStyle(.plain)
+
             Button {
-                cartManager.addToCart(product: product)
+                showSizeOptions = true
             } label: {
                 Image(systemName: "plus")
+                    .font(.headline)
                     .padding(10)
-                    .foregroundStyle(Color.black)
-                    .background(.blue)
+                    .foregroundColor(.white)
+                    .background(Color.blue)
                     .clipShape(Circle())
-                    .padding()
-                
             }
+            .padding()
+            .accessibilityLabel("Add \(product.name) to cart")
+
         }
-        
+        .confirmationDialog("Choose a size", isPresented: $showSizeOptions, titleVisibility: .visible) {
+            ForEach(ProductSize.allCases) { size in
+                Button(size.rawValue) {
+                    cartManager.addToCart(product: product, size: size)
+                }
+            }
+
+            Button("Cancel", role: .cancel) { }
+        }
     }
 }
 
 #Preview {
-    ProductCard(product: productList[0])
-        .environmentObject(CartManager())
+    NavigationView {
+        ProductCard(product: productList[0])
+            .environmentObject(CartManager())
+    }
 }
