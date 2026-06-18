@@ -26,10 +26,21 @@ struct Product: Identifiable {
 }
 
 struct CartItem: Identifiable {
-    var id = UUID()
+    var id: UUID
     var product: Product
     var size: ProductSize
+
+    init(
+        id: UUID = UUID(),
+        product: Product,
+        size: ProductSize
+    ) {
+        self.id = id
+        self.product = product
+        self.size = size
+    }
 }
+
 
 var productList = [Product(name: "Black Regular Belt", image: "Belt", price: 79, description: "Classic black belt with a clean unique design"),
                    Product(name: "Heart Boxers", image: "Boxers", price: 25, description: "Boxers with cute heart designs"),

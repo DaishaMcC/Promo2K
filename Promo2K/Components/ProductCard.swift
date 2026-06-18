@@ -9,36 +9,69 @@ import SwiftUI
 
 struct ProductCard: View {
     @EnvironmentObject var cartManager: CartManager
+
     var product: Product
 
     @State private var showSizeOptions = false
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
-
             NavigationLink {
                 ProductDetailView(product: product)
                     .environmentObject(cartManager)
             } label: {
-                ZStack(alignment: .bottom) {
+                VStack(spacing: 8) {
                     Image(product.image)
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 180, height: 180)
-                        .cornerRadius(20)
+                        .scaledToFit()
+                        .frame(height: 120)
+                        .frame(maxWidth: .infinity)
+                        .padding(8)
+                        .background(
+                            Color.white.opacity(0.08)
+                        )
+                        .clipShape(
+                            RoundedRectangle(
+                                cornerRadius: 16,
+                                style: .continuous
+                            )
+                        )
 
-                    VStack {
-                        Text(product.name)
-                            .bold()
+                    Text(product.name)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.white)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
 
-                        Text("$\(product.price)")
-                            .font(.caption)
-                    }
-                    .padding()
-                    .foregroundColor(.primary)
+                    Text("$\(product.price)")
+                        .font(.caption)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.white.opacity(0.8))
                 }
-                .frame(width: 180, height: 240)
-                .shadow(radius: 10)
+                .padding(10)
+                .frame(width: 160, height: 215)
+                .background {
+                    RoundedRectangle(
+                        cornerRadius: 22,
+                        style: .continuous
+                    )
+                    .fill(Color.black.opacity(0.68))
+                }
+                .overlay {
+                    RoundedRectangle(
+                        cornerRadius: 22,
+                        style: .continuous
+                    )
+                    .stroke(
+                        Color.blue.opacity(0.75),
+                        lineWidth: 1.5
+                    )
+                }
+                .shadow(
+                    color: Color.blue.opacity(0.3),
+                    radius: 8
+                )
             }
             .buttonStyle(.plain)
 
@@ -47,23 +80,32 @@ struct ProductCard: View {
             } label: {
                 Image(systemName: "plus")
                     .font(.headline)
-                    .padding(10)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
+                    .frame(width: 32, height: 32)
                     .background(Color.blue)
                     .clipShape(Circle())
+                    .shadow(radius: 4)
             }
-            .padding()
-            .accessibilityLabel("Add \(product.name) to cart")
-
+            .offset(x: 7, y: -7)
+            .accessibilityLabel(
+                "Add \(product.name) to cart"
+            )
         }
-        .confirmationDialog("Choose a size", isPresented: $showSizeOptions, titleVisibility: .visible) {
+        .confirmationDialog(
+            "Choose a size",
+            isPresented: $showSizeOptions,
+            titleVisibility: .visible
+        ) {
             ForEach(ProductSize.allCases) { size in
                 Button(size.rawValue) {
-                    cartManager.addToCart(product: product, size: size)
+                    cartManager.addToCart(
+                        product: product,
+                        size: size
+                    )
                 }
             }
 
-            Button("Cancel", role: .cancel) { }
+            Button("Cancel", role: .cancel) {}
         }
     }
 }
@@ -72,5 +114,9 @@ struct ProductCard: View {
     NavigationView {
         ProductCard(product: productList[0])
             .environmentObject(CartManager())
+            .padding()
+            .background(Color.black)
     }
 }
+
+

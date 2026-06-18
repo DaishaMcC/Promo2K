@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct Promo2KApp: App {
@@ -13,5 +14,7 @@ struct Promo2KApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: SavedCartItem.self)
     }
 }
+
